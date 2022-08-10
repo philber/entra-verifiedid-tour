@@ -11,7 +11,7 @@ description: "A code sample application demonstrating custom issuance and verifi
 urlFragment: "Part-1"
 ---
 
-# A guided tour of Microsoft Entra Verified ID - Samples
+# A guided tour of Microsoft Entra Verified ID - Part 1 Sample
 
 This repo contains a fork of a set of Microsoft Entra Verified ID (formerly knwow as Azure AD Verifiable Credentials) samples
 
@@ -19,8 +19,6 @@ This repo contains a fork of a set of Microsoft Entra Verified ID (formerly knwo
 A NodeJS code sample application for using the VC Request Service API to issue and verify verifiable credentials with a credential contract which allows the VC Request API to pass in a payload for the managed Verified Employee credentials|
 
 Microsoft provides a simple to use REST API to issue and verify verifiable credentials. You can use the programming language you prefer to the REST API. We use here node.js. Instead of needing to understand the different protocols and encryption algorithms for Verifiable Credentials and DIDs you only need to understand how to format a JSON structure as parameter for the VC Request Service API. 
-
-![API Overview](ReadmeFiles/SampleArchitectureOverview.svg)
 
 ## Issuance
 
@@ -214,7 +212,6 @@ For more information, see MSAL.NET's conceptual documentation:
 - [Quickstart: Configure a client application to access web APIs](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
 - [Acquiring a token for an application with client credential flows](https://aka.ms/msal-net-client-credentials)
 
-<br/> <br/>
 
 # Microsoft Entra Code Sample Application
 
@@ -232,14 +229,14 @@ The project is divided in 2 parts, one for issuance and one for verifying a veri
 | Issuance | |
 |------|--------|
 | public\issuer.html|The basic webpage containing the javascript to call the APIs for issuance. |
-| issuer.js | This is the file which implements express routes which contains the API called from the webpage. It calls the REST API after getting an access token through MSAL. |
+| issuer.js | This is the file which implements express routes which contains the API called from the webpage. It calls the Request Service REST API after getting an access token through MSAL. |
 | issuance_request_config.json | The sample payload send to the server to start issuing a VC. |
 
 | Verification | |
 |------|--------|
-| static\verifier.html | The website acting as the verifier of the verifiable credential.
-| verifier.js | This is the file which implements express routes which contains the API called from the webpage. It calls the REST API after getting an access token through MSAL and helps verifying the presented verifiable credential.
-| presentation_request_config.json | The sample payload send to the server to start issuing a vc.
+| public\verifier.html | The website acting as the verifier of the verifiable credential.
+| verifier.js | This is the file which implements express routes which contains the API called from the webpage. It calls the Request Service REST API after getting an access token through MSAL and helps verifying the presented verifiable credential.
+| presentation_request_config.json | The sample payload send to the server to start issuing a VC.
 
 ## Setup
 
@@ -273,7 +270,7 @@ To run the code sample application, clone the repository, compile & run it. It's
 
 ```Powershell
 git clone https://github.com/philber/entra-verifiedid-tour.git
-cd part-1
+cd entra-verifiedid-tour\part-1
 ```
 
 ### Create your managed Verified Employee credential

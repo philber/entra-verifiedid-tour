@@ -10,7 +10,7 @@ description: "A code sample application demonstrating custom issuance and verifi
 urlFragment: "Part-3"
 ---
 
-# A guided tour of Microsoft Entra Verified ID - Samples
+# A guided tour of Microsoft Entra Verified ID - Part 3 Sample
 
 This code sample application demonstrates how to use Microsoft Entra Verified ID to issue and consume managed Custom Credentials for use with Azure AD B2C. 
 
@@ -35,13 +35,13 @@ As before with the NodeJS project in the first and second parts of this guide, t
 | Issuance | |
 |------|--------|
 | wwwroot/issuer.html|The basic webpage containing the javascript to call the APIs for issuance. |
-| ApiIssuerController.cs | This is the controller which contains the API called from the webpage. It calls the REST API after getting an access token through MSAL. |
+| ApiIssuerController.cs | This is the controller which contains the API called from the webpage. It calls the Request Service REST API after getting an access token through MSAL. |
 | issuance_request_config.json | The sample payload send to the server to start issuing a vc. |
 
 | Verification | |
 |------|--------|
 | wwwroot/verifier.html | The basic webpage acting as the verifier of the verifiable credential.
-| ApiVerifierController.cs | This is the controller which contains the API called from the webpage. It calls the REST API after getting an access token through MSAL and helps verifying the presented verifiable credential.
+| ApiVerifierController.cs | This is the controller which contains the API called from the webpage. It calls the Request Service REST API after getting an access token through MSAL and helps verifying the presented verifiable credential.
 | presentation_request_config.json | The sample payload send to the server to start issuing a vc.
 
 ## Setup

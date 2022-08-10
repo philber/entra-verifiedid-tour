@@ -9,7 +9,7 @@ description: "A code sample application demonstrating custom issuance and verifi
 urlFragment: "Part-2"
 ---
 
-# A guided tour of Microsoft Entra Verified ID - Samples
+# A guided tour of Microsoft Entra Verified ID - Part 2 Sample
 
 This code sample application demonstrates how to use Microsoft Entra Verified ID to issue and consume managed Custom Credentials. 
 
@@ -25,14 +25,14 @@ As before, the NodeJS project is divided in 2 parts, one for issuance and one fo
 | Issuance | |
 |------|--------|
 | public\issuer.html|The basic webpage containing the javascript to call the APIs for issuance. |
-| issuer.js | This is the file which implements express routes which contains the API called from the webpage. It calls the REST API after getting an access token through MSAL. |
+| issuer.js | This is the file which implements express routes which contains the API called from the webpage. It calls the Request Service REST API after getting an access token through MSAL. |
 | issuance_request_config.json | The sample payload send to the server to start issuing a VC. |
 
 | Verification | |
 |------|--------|
-| static\verifier.html | The website acting as the verifier of the verifiable credential.
-| verifier.js | This is the file which implements express routes which contains the API called from the webpage. It calls the REST API after getting an access token through MSAL and helps verifying the presented verifiable credential.
-| presentation_request_config.json | The sample payload send to the server to start issuing a vc.
+| public\verifier.html | The website acting as the verifier of the verifiable credential.
+| verifier.js | This is the file which implements express routes which contains the API called from the webpage. It calls the Request Service REST API after getting an access token through MSAL and helps verifying the presented verifiable credential.
+| presentation_request_config.json | The sample payload send to the server to start issuing a VC.
 
 ## Setup
 
@@ -66,7 +66,7 @@ To run the sample, clone the repository, compile & run it. It's callback endpoin
 
 ```Powershell
 git clone https://github.com/philber/entra-verifiedid-tour.git
-cd part-2
+cd entra-verifiedid-tour\part-2
 ```
 
 ### Create your Custom Credential
