@@ -76,7 +76,7 @@ To run the sample, clone the repository, compile & run it. It's callback endpoin
 
 ```Powershell
 git clone https://github.com/philber/entra-verifiedid-tour.git
-cd part-3
+cd entra-verifiedid-tour\part-3
 ```
 
 ### Create your Custom Credential
@@ -118,7 +118,7 @@ The remaining five settings control what VC credential you want to issue and pre
     "CredentialType": "CustomCredentialB2C",
     "DidManifest": "https://beta.eu.did.msidentity.com/v1.0/<your-tenant-id-for-VC>/verifiableCredential/contracts/<your-name>",
     "IssuancePinCodeLength": 0,
-    "B2C1ARestApiKey": "your-b2c-app-key 
+    "B2C1ARestApiKey": "your-b2c-app-key" 
 ```
 - **ApiEndpoint** - If you have an EU Azure AD tenant, then it should read `beta.eu.did`. If not, then remove `.eu.`
 - **TenantId** - This is the Azure AD tenant that you have setup Verifiable Credentials in. It is not the B2C tenant.
