@@ -18,9 +18,9 @@ Welcome to the first part of guided tour of Microsoft Entra Verified ID.
 In this part, we'll guide you to issue your first Verifiable Credential (VC): a managed Verified Employee credential. You'll then use this credential to prove to a verifier that you are a Verified Employee of your (fictitious) organization. 
 
 ## About the code sample application
-The code sample application being leverage is forked from the repo available at [https://github.com/Azure-Samples/active-directory-verifiable-credentials-node](https://github.com/Azure-Samples/active-directory-verifiable-credentials-node). 
+The code sample application is forked from the repo available at [https://github.com/Azure-Samples/active-directory-verifiable-credentials-node](https://github.com/Azure-Samples/active-directory-verifiable-credentials-node). 
 
-**PLEASE REFER TO THESE REPOS FOR THE LATEST AVAILABLE BITS.**
+**PLEASE REFER TO THIS REPO FOR THE LATEST AVAILABLE BITS.**
 
 This code sample application is using the Request Service API to both issue and verify Verifiable Employee credentials with a credential contract which allows the REST API to pass in a payload for these credentials.
 
@@ -236,7 +236,7 @@ The project is divided in 2 parts, one for issuance and one for verifying a veri
 
 ## Setup
 
-Before you can run this sample make sure your environment is setup correctly, follow the instructions in the guide "A guided tour of Microsoft Entra Verified ID - Part 1 - A first walkthrough to illustrate how to get started with verifiable credentials in your Azure Active Directory (Azure AD) tenant"? You can alternatively refer to the documentation [here](https://aka.ms/vcsample).
+Before you can run this sample make sure your environment is setup correctly, follow the instructions in the first part of the guide. You can alternatively refer to the documentation [here](https://aka.ms/vcsample).
 
 ## Setting up and running the code sample application
 To run the code sample application, clone the repository, compile & run it. It's callback endpoint must be publically reachable, and for that reason, use `ngrok` as a reverse proxy to reach your app.

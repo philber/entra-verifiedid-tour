@@ -24,7 +24,7 @@ It is indeed designed to work together with Azure AD B2C in order to have Verifi
 
 The code sample application is forked from the repo available at [https://github.com/Azure-Samples/active-directory-verifiable-credentials-dotnet](https://github.com/Azure-Samples/active-directory-verifiable-credentials-dotnet). More specifically, the related code is located in the 3-asp-net-core-api-b2c folder.
 
-Likewise, The sample Azure AD B2C custom policies being used along with this code are forked from the repo available at [https://github.com/Azure-Samples/active-directory-verifiable-credentials/tree/main/B2C](https://github.com/Azure-Samples/active-directory-verifiable-credentials/tree/main/B2C).
+Likewise, the sample Azure AD B2C custom policies being used along with this code are forked from the repo available at [https://github.com/Azure-Samples/active-directory-verifiable-credentials/tree/main/B2C](https://github.com/Azure-Samples/active-directory-verifiable-credentials/tree/main/B2C).
 
 **PLEASE REFER TO THESE REPOS FOR THE LATEST AVAILABLE BITS.**
 
@@ -56,7 +56,7 @@ As before with the NodeJS project in the first and second parts of this guide, t
 
 ## Setup
 
-Before you can run this code sample application make sure your environment is setup correctly, follow the instructions in the previous parts 1 & 2 of this guide or in the documentation [here](https://aka.ms/vcsample).
+Before you can run this code sample application make sure your environment is setup correctly, follow the instructions in the previous first and second parts of the guide and/or in the documentation [here](https://aka.ms/vcsample).
 
 ## Setting up and running the sample
 To run the sample, clone the repository, compile & run it. It's callback endpoint must be publically reachable, and for that reason, use a tool like `ngrok` as a reverse proxy to reach your app.

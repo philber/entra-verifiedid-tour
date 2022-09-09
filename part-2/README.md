@@ -21,7 +21,7 @@ This code sample application demonstrates how to use Microsoft Entra Verified ID
 
 This application in NodeJS is forked from the repo available at [https://github.com/Azure-Samples/active-directory-verifiable-credentials-node](https://github.com/Azure-Samples/active-directory-verifiable-credentials-node). The related code is located in the 1-node-api-idtokenhint.
 
-**PLEASE REFER TO THESE REPOS FOR THE LATEST AVAILABLE BITS.**
+**PLEASE REFER TO THIS REPO FOR THE LATEST AVAILABLE BITS.**
 
 The code sample application uses the Request Service REST API which supports ID Token to pass a payload for the verifiable credential. It has been adapted accordingly.
 
