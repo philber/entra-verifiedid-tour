@@ -11,8 +11,6 @@
     "registration": {
       "clientName": "Verified Employee Issuer Sample"
     },
-    "issuance": {
-      "type": "VerifiedEmployee",
-      "manifest": "CREDENTIAL URL IN THIS SAMPLE WILL BE COPIED FROM APPSETTINGS.JSON"
-    }
+    "type": "VerifiedEmployee",
+    "manifest": "CREDENTIAL URL IN THIS SAMPLE WILL BE COPIED FROM APPSETTINGS.JSON"
 }

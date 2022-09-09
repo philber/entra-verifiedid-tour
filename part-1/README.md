@@ -13,10 +13,18 @@ urlFragment: "Part-1"
 
 # A guided tour of Microsoft Entra Verified ID - Part 1 Sample
 
-This repo contains a fork of a set of Microsoft Entra Verified ID (formerly knwow as Azure AD Verifiable Credentials) samples
+Welcome to the first part of guided tour of Microsoft Entra Verified ID. 
 
-## Code Sample Application Description
-A NodeJS code sample application for using the VC Request Service API to issue and verify verifiable credentials with a credential contract which allows the VC Request API to pass in a payload for the managed Verified Employee credentials|
+In this part, we'll guide you to issue your first Verifiable Credential (VC): a managed Verified Employee credential. You'll then use this credential to prove to a verifier that you are a Verified Employee of your (fictitious) organization. 
+
+## About the code sample application
+The code sample application being leverage is forked from the repo available at [https://github.com/Azure-Samples/active-directory-verifiable-credentials-node](https://github.com/Azure-Samples/active-directory-verifiable-credentials-node). 
+
+**PLEASE REFER TO THESE REPOS FOR THE LATEST AVAILABLE BITS.**
+
+This code sample application is using the Request Service API to both issue and verify Verifiable Employee credentials with a credential contract which allows the REST API to pass in a payload for these credentials.
+
+The endpoint of the API is https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/createIssuanceRequest and https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/createPresentationRequest.
 
 Microsoft provides a simple to use REST API to issue and verify verifiable credentials. You can use the programming language you prefer to the REST API. We use here node.js. Instead of needing to understand the different protocols and encryption algorithms for Verifiable Credentials and DIDs you only need to understand how to format a JSON structure as parameter for the VC Request Service API. 
 
@@ -24,7 +32,7 @@ Microsoft provides a simple to use REST API to issue and verify verifiable crede
 
 ### Issuance JSON structure
 
-To call the VC Client API to start the issuance process, the VC Request API needs a JSON structure payload like below. 
+To start the issuance process, the Request Service REST API needs a JSON structure payload like below from the code sample application. 
 
 ```JSON
 {
@@ -43,25 +51,21 @@ To call the VC Client API to start the issuance process, the VC Request API need
     },
     // The type needs to be the same as defined in the Rules description for the managed verified employee. The manifest can be copied 
     // after the credential has been created in the Azure portal
-    "issuance": {
-      "type": "your credentialType",
-      "manifest": "https://beta.eu.did.msidentity.com/v1.0/abc/verifiableCredential/contracts/Verified employee 1"
-    }
+    "type": "your credentialType",
+    "manifest": "https://beta.eu.did.msidentity.com/v1.0/abc/verifiableCredential/contracts/Verified employee 1"
 }
 ```
 
-- **includeQRCode** - If you want the VC Client API to return a `data:image/png;base64` string of the QR code to present in the browser. If you select `false`, you must create the QR code yourself (which is not difficult).
-- **callback.url** - a callback endpoint in your (code sample) application. The VC Request API will call this endpoint when the issuance is completed.
+- **includeQRCode** - If you want the Request service REST API to return a `data:image/png;base64` string of the QR code to present in the browser. If you select `false`, you must create the QR code yourself (which is not difficult).
+- **callback.url** - a callback endpoint in your (code sample) application. The Request Service API will call this endpoint when the issuance is completed.
 - **callback.state** - A state value you provide so you can correlate this request when you get callback confirmation
-- **callback.headers** - Any HTTP Header values that you would like the VC Request API to pass back in the callbacks. Here you could set your own API key, for instance- 
-- **authority** - is the DID identifier for your registered Microsoft Entra Verified ID service from portal.azure.com.
+- **callback.headers** - Any HTTP Header values that you would like the Request Service API to pass back in the callbacks. Here you could set your own API key, for instance- 
+- **authority** - is the DID identifier for your registered Microsoft Entra Verified ID instance from portal.azure.com.
 - **registration.clientName** - name of your app which will be shown in the Microsoft Authenticator
-- **issuance.type** - the name of your credentialType. This value is configured in the rules definition of the managed credentatial.
-- **issuance.manifest** - url of your manifest for your VC. This comes from your defined managed Verified Employee credential in portal.azure.com
-- **issuance.pin** - If you want to require a pin code in the Microsoft Authenticator for this issuance request. This can be useful if it is a self issuing situation where there is no possibility of asking the user to prove their identity via a login. If you don't want to use the pin functionality, you should not have the pin section in the JSON structure. The appsettings.PinCode.json contains a settings for issuing with pin code.
-- **issuance.claims** - optional, extra claims you want to include in the VC.
+- **type** - the name of your credentialType. This value is configured in the rules definition of the managed credentatial.
+- **manifest** - url of your manifest for your VC. This comes from your defined managed Verified Employee credential in portal.azure.com
 
-In the response message from the VC Request API, it will include a URL to the request which is hosted at the Microsoft VC request service, which means that once the Microsoft Authenticator has scanned the QR code, it will contact the VC Request service directly and not your application directly. Your application will get a callback from the VC Request service via the callback.
+In the response message from the Request Service API, it will include a URL to the request which is hosted at the Microsoft VC request service, which means that once the Microsoft Authenticator has scanned the QR code, it will contact the VC Request service directly and not your application directly. Your application will get a callback from the VC Request service via the callback.
 
 ```json
 {
@@ -78,7 +82,7 @@ In your callback endpoint, you will get a callback with the below message when t
 
 ```JSON
 {
-  "code":"request_retrieved",
+  "requestStatus":"request_retrieved",
   "requestId":"9463da82-e397-45b6-a7a2-2c4223b9fdd0",
   "state": "...what you passed as the state value..."
 }
@@ -91,7 +95,7 @@ This callback is typically used to notify the user on the issuance website the p
 ### Successful Issuance flow response
 ```JSON
 {
-  "code":"issuance_successful",
+  "requestStatus":"issuance_successful",
   "requestId":"9463da82-e397-45b6-a7a2-2c4223b9fdd0",
   "state": "...what you passed as the state value..."
 }
@@ -99,7 +103,7 @@ This callback is typically used to notify the user on the issuance website the p
 ### Unuccessful Issuance flow response
 ```JSON
 {
-  "code":"issuance_failed",
+  "requestStatus":"issuance_failed",
   "requestId":"9463da82-e397-45b6-a7a2-2c4223b9fdd0", 
   "state": "...what you passed as the state value...",
   "error": {
@@ -121,7 +125,7 @@ When the issuance fails this can be caused by several reasons. The following det
 
 ### Verification JSON structure
 
-To call the VC Request API to start the verification process, the application creates a JSON structure like below. Since the WebApp asks the user to present a VC, the request is also called `presentation request`.
+To call the Request Service API to start the verification process, the application creates a JSON structure like below. Since the WebApp asks the user to present a VC, the request is also called `presentation request`.
 
 ```JSON
 {
@@ -138,15 +142,19 @@ To call the VC Request API to start the verification process, the application cr
         "api-key": "API key to help protect your callback API"
     }
   },
-  "presentation": {
-    "includeReceipt": false,
-    "requestedCredentials": [
-      {
-        "type": "your credentialType",
-        "purpose": "the purpose why the verifier asks for a VC",
-        "acceptedIssuers": [ "did:ion: ...of the Issuer" ]
-      }
-    ]
+  "includeReceipt": false,
+  "requestedCredentials": [
+    {
+      "type": "your credentialType",
+      "purpose": "the purpose why the verifier asks for a VC",
+      "acceptedIssuers": [ "did:ion: ...of the Issuer" ]
+    }
+  ],
+  "configuration": {
+    "validation": {
+      "allowRevoked": true,
+      "validateLinkedDomain": true
+    }
   }
 }
 ```
@@ -154,7 +162,6 @@ To call the VC Request API to start the verification process, the application cr
 Much of the data is the same in this JSON structure, but some differences needs explaining.
 
 - **authority** vs **acceptedIssuers** - The Verifier and the Issuer may be two different entities. For example, the Verifier might be a online service, like a car rental service, while the DID it is asking for is the issuing entity for drivers licenses. Note that `acceptedIssuers` is a collection of DIDs, which means you can ask for multiple VCs from the user coming from different trusted issuers.
-- **presentation** - required for a Verification request. Note that `issuance` and `presentation` are mutually exclusive. You can't send both.
 - **requestedCredentials** - please also note that the `requestedCredentials` is a collection too, which means you can ask to create a presentation request that contains multiple DIDs.
 - **includeReceipt** - if set to true, the `presentation_verified` callback will contain the `receipt` element.
 
@@ -165,7 +172,7 @@ In your callback endpoint, you will get a callback with the below message when t
 When the QR code is scanned, you get a short callback like this.
 ```JSON
 {
-  "code":"request_retrieved",
+  "requestStatus":"request_retrieved",
   "requestId":"c18d8035-3fc8-4c27-a5db-9801e6232569", 
   "state": "...what you passed as the state value..."
 }
@@ -175,7 +182,7 @@ Once the VC is verified, you get a second, more complete, callback which contain
 
 ```JSON
 {
-    "code":"presentation_verified",
+    "requestStatus":"presentation_verified",
     "requestId":"c18d8035-3fc8-4c27-a5db-9801e6232569",
     "state": "...what you passed as the state value...",
     "subject": "did:ion: ... of the VC holder...",
@@ -189,46 +196,35 @@ Once the VC is verified, you get a second, more complete, callback which contain
             "jobTitle":"Verfiable Credential Expert"
             // ... 
         },
-        "domain":"https://wwww.litware369.com",
-        "verified": "DNS"
+        "credentialState": {
+          "revocationStatus": "VALID"
+        },
+        "domainValidation": {
+          "url": "https://wwww.litware369.com"
+        }        
       }
     ],
     "receipt":{
-        "id_token": "...JWT Token of VC..."
+        "id_token": "...JWT Token of VC...",
+        "vp_token": "...JWT Token of VP..."
         }
     }
 }
 ```
 Some notable attributes in the message:
-- **claims** - parsed claims from the VC
-- **receipt.id_token** - the ID token of the presentation, this is the full presentation Authenticator has sent to the Request service. Great for debugging and also to retrieve information not available in the payload. To keep the responses small the receipt property in the request should be set to false.
+- **claims** - parsed claims from the VC.
+- **credentialState.revocationStatus** - indicates the current revocation status at the time of the presentaion.
+- **domainValidation** - If you asked for domain validation via passing validateLinkedDomain true in the request, you will get the validated domain name in the response.
+- **receipt.id_token** - The ID token of the presentation, this is the full presentation Authenticator has sent to the Request service. Great for debugging and also to retrieve information not available in the payload. To keep the responses small the receipt property in the request should be set to false.
+- **receipt.vp_token** - The JWT token of the credential in the presentation response. In the token, the vp.verifiableCredential contains the VCs for the presented credentials.
 
-
-## Resources
-
-For more information, see MSAL.NET's conceptual documentation:
-- [Configure your tenant for Microsoft Entra Verified ID](https://aka.ms/vcsetup)
-- [Quickstart: Register an application with the Microsoft identity platform](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
-- [Quickstart: Configure a client application to access web APIs](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
-- [Acquiring a token for an application with client credential flows](https://aka.ms/msal-net-client-credentials)
-
-
-# Microsoft Entra Code Sample Application
-
-This code sample application demonstrates how to use Microsoft Entra Verified ID to issue and consume managed Verified Employee credentials. 
-
-## About this code sample application
-
-Welcome to the guided tour of Microsoft Entra Verified ID. In this code sample application, we'll guide you to issue your first verifiable credential: a managed Verified Employee credential. You'll then use this credential to prove to a verifier that you are a Verified Employee of your (fictitious) organization. The code sample application uses the Request Service API to pass a payload for the Verified Employee.
-
-## Contents
+## Content
 
 The project is divided in 2 parts, one for issuance and one for verifying a verifiable credential. Depending on the scenario you need you can remove 1 part. To verify if your environment is completely working you can use both parts to issue a managed Verified Employee credential and verify that as well.
 
-
 | Issuance | |
 |------|--------|
-| public\issuer.html|The basic webpage containing the javascript to call the APIs for issuance. |
+| public\issuer.html|The basic webpage containing the javascript to call the Request Service API for issuance. |
 | issuer.js | This is the file which implements express routes which contains the API called from the webpage. It calls the Request Service REST API after getting an access token through MSAL. |
 | issuance_request_config.json | The sample payload send to the server to start issuing a VC. |
 
@@ -241,29 +237,6 @@ The project is divided in 2 parts, one for issuance and one for verifying a veri
 ## Setup
 
 Before you can run this sample make sure your environment is setup correctly, follow the instructions in the guide "A guided tour of Microsoft Entra Verified ID - Part 1 - A first walkthrough to illustrate how to get started with verifiable credentials in your Azure Active Directory (Azure AD) tenant"? You can alternatively refer to the documentation [here](https://aka.ms/vcsample).
-
-### create application registration
-Run the [Configure.PS1](./AppCreationScripts/AppCreationScripts.md) powershell script in the AppCreationScripts directory or follow these manual steps to create an application registrations, give the application the correct permissions so it can access the Verifiable Credentials Request REST API:
-
-Register an application in Azure Active Directory: 
-1. Sign in to the Azure portal using either a work or school account or a personal Microsoft account.
-2. Navigate to the Microsoft identity platform for developers App registrations page.
-3. Select New registration
-    -  In the Name section, enter a meaningful application name for your issuance and/or verification application
-    - In the supported account types section, select Accounts in this organizational directory only ({tenant name})
-    - Select Register to create the application
-4.	On the app overview page, find the Application (client) ID value and Directory (tenant) ID and record it for later.
-5.	From the Certificates & secrets page, in the Client secrets section, choose New client secret:
-    - Type a key description (for instance app secret)
-    - Select a key duration.
-    - When you press the Add button, the key value will be displayed, copy and save the value in a safe location.
-    - You’ll need this key later to configure the sample application. This key value will not be displayed again, nor retrievable by any other means, so record it as soon as it is visible from the Azure portal.
-6.	In the list of pages for the app, select API permissions
-    - Click the Add a permission button
-    - Search for APIs in my organization for 3db474b9-6a0c-4840-96ac-1fceb342124f or Verifiable Credential and click the “Verifiable Credential Request Service”
-    - Click the “Application Permission” and expand “VerifiableCredential.Create.All”
-    - Click Grant admin consent for {tenant name} on top of the API/Permission list and click YES. This allows the application to get the correct permissions
-![Admin concent](ReadmeFiles/AdminConcent.PNG)
 
 ## Setting up and running the code sample application
 To run the code sample application, clone the repository, compile & run it. It's callback endpoint must be publically reachable, and for that reason, use `ngrok` as a reverse proxy to reach your app.
@@ -294,7 +267,6 @@ The file [run.cmd](run.cmd) is a template for passing the correct variables and 
 
 In order to build & run the code sample application, you need to have the [node](https://nodejs.org/en/download/) installed locally. 
 
-
 1. After you have edited the file [config.json](config.json), start the node app by running this in the command prompt
 ```Powershell
 npm install
@@ -312,7 +284,7 @@ The sample dynamically copies the hostname to be part of the callback URL, this 
 1. Select GET CREDENTIAL
 
 1. In Authenticator, scan the QR code. 
-> If this is the first time you are using Verifiable Credentials the Credentials page with the Scan QR button is hidden. You can use the `add account` button. Select `other` and scan the QR code, this will enable the Verifiable Credentials in Authenticator.
+> If this is the first time you are using Verified ID the Credentials page with the Scan QR button is hidden. You can use the `add account` button. Select `other` and scan the QR code, this will enable the Verifiable Credentials in Authenticator.
 6. If you see the 'This app or website may be risky screen', select **Advanced**.
 1. On the next **This app or website may be risky** screen, select **Proceed anyways (unsafe)**.
 1. On the Add a credential screen, notice that:
@@ -322,7 +294,7 @@ The sample dynamically copies the hostname to be part of the callback URL, this 
 
 9. Select **Add**.
 
-## Verify the verifiable credential by using the sample app
+## Verify the verifiable credential by using the code sample application
 1. Navigate back and click on the Verify Credential link
 2. Click Verify Credential button
 3. Scan the QR code
@@ -331,13 +303,9 @@ The sample dynamically copies the hostname to be part of the callback URL, this 
 
 ## About the code
 Since the Request Service API is a multi-tenant API it needs to receive an access token when it's called. 
-The new endpoint of the API is https://verifiedid.did.msidentity.com/v1.0/{yourTenantID}/verifiablecredentials/request
 
-Please note that the prior beta.did.msidentity and the beta.eu.did.msidentity hostnames for this API continue to work:
-  - https://beta.eu.did.msidentity.com/v1.0/{yourTenantID}/verifiablecredentials/request if your tenant is located in Europe.
-  - https://beta.did.msidentity.com/v1.0/{yourTenantID}/verifiablecredentials/request otherwise.
+To get such an access token we are using MSAL as library. MSAL supports the creation and caching of access token which are used when calling Azure Active Directory protected resources like the above Request Service API.
 
-To get an access token we are using MSAL as library. MSAL supports the creation and caching of access token which are used when calling Azure Active Directory protected resources like the verifiable credential Request Service API.
 Typical calling the library looks something like this:
 ```JavaScript
 var accessToken = "";
@@ -382,7 +350,7 @@ const msalClientCredentialRequest = {
 
 Calling the API looks like this:
 ```JavaScript
-var payload = JSON.stringify(presentationConfig);
+var payload = JSON.stringify(issuanceConfig);
 console.log( payload );
 const fetchOptions = {
   method: 'POST',
@@ -393,32 +361,23 @@ const fetchOptions = {
     'Authorization': `Bearer ${accessToken}`
   }
 };
-var client_api_request_endpoint = `https://beta.did.msidentity.com/v1.0/${mainApp.config.azTenantId}/verifiablecredentials/request`;
+var client_api_request_endpoint = `https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/createIssuanceRequest`;
 const response = await fetch(client_api_request_endpoint, fetchOptions);
 var resp = await response.json()
 ```
 
-## Troubleshooting
+## Deploying the code sample application to Azure AppServices
+If you deploy the sample to **Azure AppServices**, as an alternative to using [ngrok](https://docs.microsoft.com/en-us/azure/active-directory/verifiable-credentials/verifiable-credentials-faq#i-can-not-use-ngrok-what-do-i-do), you need to update the files `config.json`, `issuance_request_config.json` and `presentation_request_config.json` with your changes before you do **Deploy To Web App** in VSCode. After you have deployed your code sample application, AppServices starts it via invoking the `npm start` command, which means if those files contain the right settings, your app will start successfully. When you create an Azure AppService instance, you should select **Runtime stack** = `Node` and **OS** = `Linux` and select the same region that you have your Azure KeyVault deployed to.
 
-### Did you forget to provide admin consent? This is needed for confidential apps
-If you get an error when calling the API `Insufficient privileges to complete the operation.`, this is because the tenant administrator has not granted permissions
-to the application. See step 6 of 'Register the client app' above.
-
-You will typically see, on the output window, something like the following:
-
-```Json
-Failed to call the Web Api: Forbidden
-Content: {
-  "error": {
-    "code": "Authorization_RequestDenied",
-    "message": "Insufficient privileges to complete the operation.",
-    "innerError": {
-      "request-id": "<a guid>",
-      "date": "<date>"
-    }
-  }
-}
+**package.json**
+```json
+  ...
+  "scripts": {
+    "start": "node app.js ./config.json ./issuance_request_config.json ./presentation_request_config.json",
+  ...
 ```
+
+If the app doesn't start, if you view the logs in AppServices LogStream, you may see the problem. See [docs](https://docs.microsoft.com/en-us/azure/app-service/configure-language-python#customize-build-automation).
 
 ### Understanding what's going on
 As a first source of information, the Node sample will trace output into the console window of all HTTP calls it receives. Then a good tip is to use Edge/Chrome/Firefox dev tools functionality found under F12 and watch the Network tab for traffic going from the browser to the Node app.
@@ -427,3 +386,11 @@ As a first source of information, the Node sample will trace output into the con
 When deploying applications which need client credentials and use secrets or certificates the more secure practice is to use certificates. If you are hosting your application on azure make sure you check how to deploy managed identities. This takes away the management and risks of secrets in your application.
 You can find more information here:
 - [Integrate a daemon app with Key Vault and MSI](https://github.com/Azure-Samples/active-directory-dotnetcore-daemon-v2/tree/master/3-Using-KeyVault)
+
+## Resources
+
+For more information, see MSAL.NET's conceptual documentation:
+- [Configure your tenant for Microsoft Entra Verified ID](https://aka.ms/vcsetup)
+- [Quickstart: Register an application with the Microsoft identity platform](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
+- [Quickstart: Configure a client application to access web APIs](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
+- [Acquiring a token for an application with client credential flows](https://aka.ms/msal-net-client-credentials)

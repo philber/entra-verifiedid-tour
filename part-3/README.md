@@ -12,13 +12,23 @@ urlFragment: "Part-3"
 
 # A guided tour of Microsoft Entra Verified ID - Part 3 Sample
 
-This code sample application demonstrates how to use Microsoft Entra Verified ID to issue and consume managed Custom Credentials for use with Azure AD B2C. 
+Welcome to the third part of guided tour of Microsoft Entra Verified ID. 
+
+In this part, we'll teach you to issue Custom Credential to your B2C users once they signed up. You'll then use this card to prove that you are a verified customer of your (fictitious) organization during signin with Azure AD B2C custom policies. 
 
 ## About this code sample application
 
-Welcome to the guided tour of Microsoft Entra Verified ID. In this code sample application in ASP.Net Core, we'll teach you to issue Custom Credential to your B2C users once they signed up. You'll then use this card to prove that you are a verified customer of your (fictitious) organization during signin with B2C policies. The code sample application uses the Request Service API which supports ID Token to pass a payload for the verifiable credential.
+This code sample application in ASP.Net Core demonstrates how to use Microsoft Entra Verified ID to issue and consume managed Custom Credentials for use with Azure AD B2C custom policies. 
 
-It is designed to work together with Azure AD B2C in order to have Verifiable Credentials for B2C accounts. Even though you could use it for testing generic VC contracts, like the VerifiedEmployee resp. the CustomCredentialTest VC in the firt part resp. the second part of this guide, you should use it when integrating with the provided Azure AD B2C custom policies that exists in this repo.
+It is indeed designed to work together with Azure AD B2C in order to have Verifiable Credentials for B2C accounts. Even though you could use it for testing generic VC contracts, like the VerifiedEmployee resp. the CustomCredentialTest VC in the firt part resp. the second part of this guide, you should use it when integrating with the provided Azure AD B2C custom policies that exists in this repo.
+
+The code sample application is forked from the repo available at [https://github.com/Azure-Samples/active-directory-verifiable-credentials-dotnet](https://github.com/Azure-Samples/active-directory-verifiable-credentials-dotnet). More specifically, the related code is located in the 3-asp-net-core-api-b2c folder.
+
+Likewise, The sample Azure AD B2C custom policies being used along with this code are forked from the repo available at [https://github.com/Azure-Samples/active-directory-verifiable-credentials/tree/main/B2C](https://github.com/Azure-Samples/active-directory-verifiable-credentials/tree/main/B2C).
+
+**PLEASE REFER TO THESE REPOS FOR THE LATEST AVAILABLE BITS.**
+
+As such, the code sample application uses the Request Service API which supports ID Token to pass a payload for the verifiable credential. It has been adapted accordingly. 
 
 ## Azure AD B2C and Verifiable Credentials working together - how does it work?
 
@@ -28,7 +38,7 @@ and self asserted pages in Azure AD B2C and the other is the [REST API Technical
 The custom html makes it possible to do ajax calls in javascript to generate the QR code. The REST API makes it possible to integrate calls to the VC sample code so that B2C can send claims and query presentation status.
 For this to work, you need this code sample application as a backend for B2C to talk to.
 
-## Contents
+## Content
 
 As before with the NodeJS project in the first and second parts of this guide, the ASP.NET Core project is divided in 2 parts, one for issuance and one for verifying a Custom Credential for B2C use. Depending on the scenario you need you can remove 1 part. To verify if your environment is completely working you can use both parts to issue a CustomCredentialB2C VC and verify that as well.
 
@@ -46,30 +56,7 @@ As before with the NodeJS project in the first and second parts of this guide, t
 
 ## Setup
 
-Before you can run this code sample application make sure your environment is setup correctly, follow the instructions in the documentation [here](https://aka.ms/vcsample).
-
-### create application registration
-Run the [Configure.PS1](./AppCreationScripts/AppCreationScripts.md) powershell script in the AppCreationScripts directory or follow these manual steps to create an application registrations, give the application the correct permissions so it can access the Verifiable Credentials Request REST API:
-
-Register an application in Azure Active Directory: 
-1. Sign in to the Azure portal using either a work or school account or a personal Microsoft account.
-2. Navigate to the Microsoft identity platform for developers App registrations page.
-3.	Select New registration
-    -  In the Name section, enter a meaningful application name for your issuance and/or verification application
-    - In the supported account types section, select Accounts in this organizational directory only ({tenant name})
-    - Select Register to create the application
-4.	On the app overview page, find the Application (client) ID value and Directory (tenant) ID and record it for later.
-5.	From the Certificates & secrets page, in the Client secrets section, choose New client secret:
-    - Type a key description (for instance app secret)
-    - Select a key duration.
-    - When you press the Add button, the key value will be displayed, copy and save the value in a safe location.
-    - You’ll need this key later to configure the sample application. This key value will not be displayed again, nor retrievable by any other means, so record it as soon as it is visible from the Azure portal.
-6.	In the list of pages for the app, select API permissions
-    - Click the Add a permission button
-    - Search for APIs in my organization for 3db474b9-6a0c-4840-96ac-1fceb342124f or Verifiable Credential and click the “Verifiable Credentials Service Request”
-    - Click the “Application Permission” and expand “VerifiableCredential.Create.All”
-    - Click Grant admin consent for {tenant name} on top of the API/Permission list and click YES. This allows the application to get the correct permissions
-![Admin concent](ReadmeFiles/AdminConcent.PNG)
+Before you can run this code sample application make sure your environment is setup correctly, follow the instructions in the previous parts 1 & 2 of this guide or in the documentation [here](https://aka.ms/vcsample).
 
 ## Setting up and running the sample
 To run the sample, clone the repository, compile & run it. It's callback endpoint must be publically reachable, and for that reason, use a tool like `ngrok` as a reverse proxy to reach your app.
@@ -79,7 +66,7 @@ git clone https://github.com/philber/entra-verifiedid-tour.git
 cd entra-verifiedid-tour\part-3
 ```
 
-### Create your Custom Credential
+### Create your Custom Credential for B2C
 To use the code sample application we need a configured managed Custom Credential in the azure portal.
 In the project directory CredentialFiles you will find the `CustomCredentialsB2CDisplay.json` file and the `CustomCredentialsB2CRules.json` file. Use these 2 files to set the releated Display abd Rules definitions fior your own CustomCredentialTest credential. 
 
@@ -101,7 +88,7 @@ First, `TenantId`, `ClientId` and `ClientSecret` are used to acquire an `access_
 The remaining five settings control what VC credential you want to issue and present. 
 
 ```JSON
-    "ApiEndpoint": "https://beta.eu.did.msidentity.com/v1.0/{0}/verifiablecredentials/request",
+    "ApiEndpoint": "https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/",
     "Authority": "https://login.microsoftonline.com/{0}",
     "scope": "3db474b9-6a0c-4840-96ac-1fceb342124f/.default",
     "TenantId": "<your-AAD-tenant-for-VC>",    
@@ -116,11 +103,11 @@ The remaining five settings control what VC credential you want to issue and pre
     "VerifierAuthority": "did:ion:...your DID...",
     "IssuerAuthority": "did:ion:...your DID...",
     "CredentialType": "CustomCredentialB2C",
-    "DidManifest": "https://beta.eu.did.msidentity.com/v1.0/<your-tenant-id-for-VC>/verifiableCredential/contracts/<your-name>",
+    "DidManifest": "https://verifiedid.did.msidentity.com/v1.0/<your-tenant-id-for-VC>/verifiableCredential/contracts/<your-name>",
     "IssuancePinCodeLength": 0,
     "B2C1ARestApiKey": "your-b2c-app-key" 
 ```
-- **ApiEndpoint** - If you have an EU Azure AD tenant, then it should read `beta.eu.did`. If not, then remove `.eu.`
+- **ApiEndpoint** - This is the Request Service API endpoint.
 - **TenantId** - This is the Azure AD tenant that you have setup Verifiable Credentials in. It is not the B2C tenant.
 - **ClientId** - This is the App you have registered that has the VC permission `VerifiableCredential.Create.All` and that has access to your VC Azure KeyVault.
 - **VerifierAuthority** - This DID for your Azure AD tenant. You can find in your VC blade in portal.azure.com.
@@ -216,7 +203,7 @@ If you set the LogLevel to `Trace` in the appsettings.json file, then the DotNet
 
 ## About the code
 Since the API is now a multi-tenant API it needs to receive an access token when it's called. 
-The endpoint of the API is https://beta.eu.did.msidentity.com/v1.0/{YOURTENANTID}/verifiablecredentials/request if your tenant is located in Europe. Otherwise it is https://beta.did.msidentity.com/v1.0/{YOURTENANTID}/verifiablecredentials/request 
+The endpoint of the API is https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/createIssuanceRequest and https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/createPresentationRequest.
 
 To get an access token we are using MSAL as library. MSAL supports the creation and caching of access token which are used when calling Azure Active Directory protected resources like the verifiable credential request API.
 Typicall calling the libary looks something like this:

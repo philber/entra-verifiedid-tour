@@ -12,7 +12,7 @@
       "clientName": "Verified Employee Issuer Sample"
     },
     "issuance": {
-      "type": "VerifiedEmployee",
+      "type": "VerifiedCredentialExpert",
       "manifest": "CREDENTIAL URL IN THIS SAMPLE WILL BE COPIED FROM APPSETTINGS.JSON"
     }
 }

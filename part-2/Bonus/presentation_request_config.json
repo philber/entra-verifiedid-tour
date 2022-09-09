@@ -12,18 +12,20 @@
       "api-key": "OPTIONAL API-KEY for VERIFIER CALLBACK API"
     }
   },
-  "includeReceipt": true,
-  "requestedCredentials": [
-    {
-      "type": "VerifiedEmployee",
-      "purpose": "the purpose why the verifier asks for a VC",
-      "acceptedIssuers": [ "...set at runtime..." ]
-    }
-  ],
-  "configuration": {
-    "validation": {
-      "allowRevoked": true,
-      "validateLinkedDomain": true
+  "presentation": {
+    "includeReceipt": true,
+    "requestedCredentials": [
+      {
+        "type": "VerifiedCredentialExpert",
+        "purpose": "the purpose why the verifier asks for a VC",
+        "acceptedIssuers": [ "...set at runtime..." ]
+      }
+    ],
+    "configuration": {
+      "validation": {
+        "allowRevoked": true,
+        "validateLinkedDomain": true
+      }
     }
   }
 }

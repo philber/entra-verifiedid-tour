@@ -10,8 +10,8 @@ var express = require('express')
 var session = require('express-session')
 var base64url = require('base64url')
 var secureRandom = require('secure-random');
-var bodyParser = require('body-parser');
-var serveIndex = require('serve-index');
+var bodyParser = require('body-parser')
+// mod.cjs
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const https = require('https')
 const url = require('url')
@@ -51,6 +51,22 @@ var msalConfig = {
   }
 };
 
+// if certificateName is specified in config, then we change the MSAL config to use it
+if ( config.azCertificateName !== '') {
+  const privateKeyData = fs.readFileSync(config.azCertificatePrivateKeyLocation, 'utf8');
+  console.log(config.azCertThumbprint);  
+  const privateKeyObject = crypto.createPrivateKey({ key: privateKeyData, format: 'pem',    
+    passphrase: config.azCertificateName.replace("CN=", "") // the passphrase is the appShortName (see Configure.ps1)    
+  });
+  msalConfig.auth = {
+    clientId: config.azClientId,
+    authority: `https://login.microsoftonline.com/${config.azTenantId}`,
+    clientCertificate: {
+      thumbprint: config.azCertThumbprint,
+      privateKey: privateKeyObject.export({ format: 'pem', type: 'pkcs8' })
+    }
+  };
+}
 
 const cca = new msal.ConfidentialClientApplication(msalConfig);
 const msalClientCredentialRequest = {
@@ -60,6 +76,19 @@ const msalClientCredentialRequest = {
 module.exports.msalCca = cca;
 module.exports.msalClientCredentialRequest = msalClientCredentialRequest;
 
+config.msIdentityHostName = "https://verifiedid.did.msidentity.com/v1.0/";
+
+// Check if it is an EU tenant and set up the endpoint for it
+fetch( `https://login.microsoftonline.com/${config.azTenantId}/v2.0/.well-known/openid-configuration`, { method: 'GET'} )
+  .then(res => res.json())
+  .then((resp) => {
+    console.log( `tenant_region_scope = ${resp.tenant_region_scope}`);
+    config.tenant_region_scope = resp.tenant_region_scope;
+    // Check that the Credential Manifest URL is in the same tenant Region and throw an error if it's not
+    if ( !config.CredentialManifest.startsWith(config.msIdentityHostName) ) {
+      throw new Error( `Error in config file. CredentialManifest URL configured for wrong tenant region. Should start with: ${config.msIdentityHostName}` );
+    }
+  }); 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Main Express server function
 // Note: You'll want to update port values for your setup.
@@ -69,9 +98,7 @@ const port = process.env.PORT || 8080;
 var parser = bodyParser.urlencoded({ extended: false });
 
 // Serve static files out of the /public directory
-app.use(express.static('public'));
-
-app.use('/.well-known', express.static('.well-known'), serveIndex('.well-known'));
+app.use(express.static('public'))
 
 // Set up a simple server side session store.
 // The session store will briefly cache issuance requests
@@ -96,9 +123,9 @@ module.exports.app = app;
 function requestTrace( req ) {
   var dateFormatted = new Date().toISOString().replace("T", " ");
   var h1 = '//****************************************************************************';
-  //console.log( `${h1}\n${dateFormatted}: ${req.method} ${req.protocol}://${req.headers["host"]}${req.originalUrl}` );
-  //console.log( `Headers:`)
- // console.log(req.headers);
+  console.log( `${h1}\n${dateFormatted}: ${req.method} ${req.protocol}://${req.headers["host"]}${req.originalUrl}` );
+  console.log( `Headers:`)
+  console.log(req.headers);
 }
 
 // echo function so you can test that you can reach your deployment
@@ -119,12 +146,7 @@ app.get("/echo",
 app.get('/', function (req, res) { 
   requestTrace( req );
   res.sendFile('public/index.html', {root: __dirname})
-});
-
-app.get('/.well-known/did-configuration.json', (req, res) => {
-    const wellknown = require('./CredentialFiles/did-configuration.json');
-    res.send(wellknown);
-});
+})
 
 var verifier = require('./verifier.js');
 var issuer = require('./issuer.js');

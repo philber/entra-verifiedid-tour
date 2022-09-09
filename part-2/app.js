@@ -52,21 +52,21 @@ var msalConfig = {
 };
 
 // if certificateName is specified in config, then we change the MSAL config to use it
-// if ( config.azCertificateName !== '') {
-//   const privateKeyData = fs.readFileSync(config.azCertificatePrivateKeyLocation, 'utf8');
-//   console.log(config.azCertThumbprint);  
-//   const privateKeyObject = crypto.createPrivateKey({ key: privateKeyData, format: 'pem',    
-//     passphrase: config.azCertificateName.replace("CN=", "") // the passphrase is the appShortName (see Configure.ps1)    
-//   });
-//   msalConfig.auth = {
-//     clientId: config.azClientId,
-//     authority: `https://login.microsoftonline.com/${config.azTenantId}`,
-//     clientCertificate: {
-//       thumbprint: config.azCertThumbprint,
-//       privateKey: privateKeyObject.export({ format: 'pem', type: 'pkcs8' })
-//     }
-//   };
-// }
+if ( config.azCertificateName !== '') {
+  const privateKeyData = fs.readFileSync(config.azCertificatePrivateKeyLocation, 'utf8');
+  console.log(config.azCertThumbprint);  
+  const privateKeyObject = crypto.createPrivateKey({ key: privateKeyData, format: 'pem',    
+    passphrase: config.azCertificateName.replace("CN=", "") // the passphrase is the appShortName (see Configure.ps1)    
+  });
+  msalConfig.auth = {
+    clientId: config.azClientId,
+    authority: `https://login.microsoftonline.com/${config.azTenantId}`,
+    clientCertificate: {
+      thumbprint: config.azCertThumbprint,
+      privateKey: privateKeyObject.export({ format: 'pem', type: 'pkcs8' })
+    }
+  };
+}
 
 const cca = new msal.ConfidentialClientApplication(msalConfig);
 const msalClientCredentialRequest = {
@@ -76,15 +76,19 @@ const msalClientCredentialRequest = {
 module.exports.msalCca = cca;
 module.exports.msalClientCredentialRequest = msalClientCredentialRequest;
 
+config.msIdentityHostName = "https://verifiedid.did.msidentity.com/v1.0/";
+
 // Check if it is an EU tenant and set up the endpoint for it
 fetch( `https://login.microsoftonline.com/${config.azTenantId}/v2.0/.well-known/openid-configuration`, { method: 'GET'} )
   .then(res => res.json())
   .then((resp) => {
     console.log( `tenant_region_scope = ${resp.tenant_region_scope}`);
     config.tenant_region_scope = resp.tenant_region_scope;
-    config.msIdentityHostName = "verifiedid.did.msidentity.com";
+    // Check that the Credential Manifest URL is in the same tenant Region and throw an error if it's not
+    if ( !config.CredentialManifest.startsWith(config.msIdentityHostName) ) {
+      throw new Error( `Error in config file. CredentialManifest URL configured for wrong tenant region. Should start with: ${config.msIdentityHostName}` );
+    }
   }); 
-  
 ///////////////////////////////////////////////////////////////////////////////////////
 // Main Express server function
 // Note: You'll want to update port values for your setup.

@@ -1,4 +1,10 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+// A guided tour of Microsoft Entra Verified ID
+// Part 3 - Custom Credential B2C Code Sample
+
+using System;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -16,6 +22,7 @@ using AspNetCoreVerifiableCredentialsB2C.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
+using System.Collections.Generic;
 
 namespace AspNetCoreVerifiableCredentialsB2C
 {
@@ -26,7 +33,6 @@ namespace AspNetCoreVerifiableCredentialsB2C
         protected readonly ILogger<ApiBaseVCController> _log;
         protected readonly AppSettingsModel AppSettings;
         protected readonly IConfiguration _configuration;
-        private string _apiEndpoint;
         private string _authority;
         public string _apiKey;
 
@@ -42,9 +48,7 @@ namespace AspNetCoreVerifiableCredentialsB2C
             _log = log;
             _configuration = configuration;
 
-            _apiEndpoint = string.Format(this.AppSettings.ApiEndpoint, this.AppSettings.TenantId);
             _authority = string.Format(this.AppSettings.Authority, this.AppSettings.TenantId);
-
             _apiKey = System.Environment.GetEnvironmentVariable("INMEM-API-KEY");
         }
 
@@ -65,7 +69,7 @@ namespace AspNetCoreVerifiableCredentialsB2C
         protected ActionResult ReturnErrorMessage(string errorMessage) {
             return BadRequest(new { error = "400", error_description = errorMessage });
         }
-        // return 200 json
+        // return 200 json 
         protected ActionResult ReturnJson( string json ) {
             return new ContentResult { ContentType = "application/json", Content = json };
         }
@@ -114,9 +118,9 @@ namespace AspNetCoreVerifiableCredentialsB2C
         }
 
         // POST to VC Client API
-        protected bool HttpPost(string body, out HttpStatusCode statusCode, out string response) {
-            response = null;
-            var accessToken = GetAccessToken( ).Result;
+        protected bool HttpPost(string url, string body, out HttpStatusCode statusCode, out string response) {
+            response = null;            
+            var accessToken = GetAccessToken( ).Result;            
             if (accessToken.Item1 == String.Empty ) {
                 statusCode = HttpStatusCode.Unauthorized;
                 response = accessToken.Item2;
@@ -124,19 +128,24 @@ namespace AspNetCoreVerifiableCredentialsB2C
             }
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken.Item1 );
-            HttpResponseMessage res = client.PostAsync( _apiEndpoint, new StringContent(body, Encoding.UTF8, "application/json") ).Result;
+            HttpResponseMessage res = client.PostAsync(  url, new StringContent(body, Encoding.UTF8, "application/json") ).Result;
             response = res.Content.ReadAsStringAsync().Result;
             client.Dispose();
             statusCode = res.StatusCode;
             return res.IsSuccessStatusCode;
         }
-        protected bool HttpGet(string url, out HttpStatusCode statusCode, out string response) {
+        protected bool HttpGet(string url, out HttpStatusCode statusCode, out string response, Dictionary<string, string> headers) {
             response = null;
             HttpClient client = new HttpClient();
+            if ( headers != null ) {
+                foreach (KeyValuePair<string, string> kvp in headers) {
+                    client.DefaultRequestHeaders.Add( kvp.Key, kvp.Value );
+                }
+            }            
             HttpResponseMessage res = client.GetAsync( url ).Result;
             response = res.Content.ReadAsStringAsync().Result;
             client.Dispose();
-            statusCode = res.StatusCode;
+            statusCode = res.StatusCode;            
             return res.IsSuccessStatusCode;
         }
 

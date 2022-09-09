@@ -10,8 +10,6 @@
     "registration": {
         "clientName": "Custom Credential B2C Issuer Sample"
     },
-    "issuance": {
-        "type": "CustomCredentialB2C",
-        "manifest": "CREDENTIAL URL IN THIS SAMPLE WILL BE COPIED FROM CONFIG.JSON"
-    }
+    "type": "CustomCredentialB2C",
+    "manifest": "CREDENTIAL URL IN THIS SAMPLE WILL BE COPIED FROM CONFIG.JSON"
 }

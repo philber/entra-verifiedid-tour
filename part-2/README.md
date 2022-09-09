@@ -11,16 +11,23 @@ urlFragment: "Part-2"
 
 # A guided tour of Microsoft Entra Verified ID - Part 2 Sample
 
-This code sample application demonstrates how to use Microsoft Entra Verified ID to issue and consume managed Custom Credentials. 
+Welcome to the second part of the guided tour of Microsoft Entra Verified ID. 
+
+In this part, we'll teach you to issue your first Custom Credential to your employees: a managed Verified Credential Card. You'll then use this card to prove to a verifier that you are a "verified employee" of your (fictitious) organization. 
 
 ## About this code sample application
 
-Welcome to the guided tour of Microsoft Entra Verified ID. In this code sample application, we'll teach you to issue your first Custom Credential to your employees: a managed Verified Credential Card. You'll then use this card to prove to a verifier that you are a "verified employee" of your (fictitious) organization. The code sample application uses the Request REST API which supports ID Token to pass a payload for the verifiable credential.
+This code sample application demonstrates how to use Microsoft Entra Verified ID to issue and consume managed Custom Credentials. 
+
+This application in NodeJS is forked from the repo available at [https://github.com/Azure-Samples/active-directory-verifiable-credentials-node](https://github.com/Azure-Samples/active-directory-verifiable-credentials-node). The related code is located in the 1-node-api-idtokenhint.
+
+**PLEASE REFER TO THESE REPOS FOR THE LATEST AVAILABLE BITS.**
+
+The code sample application uses the Request Service REST API which supports ID Token to pass a payload for the verifiable credential. It has been adapted accordingly.
 
 ## Contents
 
 As before, the NodeJS project is divided in 2 parts, one for issuance and one for verifying a Custom Credential. Depending on the scenario you need you can remove 1 part. To verify if your environment is completely working you can use both parts to issue a CustomCredentialTest VC and verify that as well.
-
 
 | Issuance | |
 |------|--------|
@@ -36,30 +43,7 @@ As before, the NodeJS project is divided in 2 parts, one for issuance and one fo
 
 ## Setup
 
-Before you can run this code sample application make sure your environment is setup correctly, follow the instructions provided in the thrid part of this guide and/or in the documentation [here](https://aka.ms/vcsample).
-
-### create application registration
-Run the [Configure.PS1](./AppCreationScripts/AppCreationScripts.md) powershell script in the AppCreationScripts directory or follow these manual steps to create an application registrations, give the application the correct permissions so it can access the Verifiable Credentials Request REST API:
-
-Register an application in Azure Active Directory: 
-1. Sign in to the Azure portal using either a work or school account or a personal Microsoft account.
-2. Navigate to the Microsoft identity platform for developers App registrations page.
-3.	Select New registration
-    -  In the Name section, enter a meaningful application name for your issuance and/or verification application
-    - In the supported account types section, select Accounts in this organizational directory only ({tenant name})
-    - Select Register to create the application
-4.	On the app overview page, find the Application (client) ID value and Directory (tenant) ID and record it for later.
-5.	From the Certificates & secrets page, in the Client secrets section, choose New client secret:
-    - Type a key description (for instance app secret)
-    - Select a key duration.
-    - When you press the Add button, the key value will be displayed, copy and save the value in a safe location.
-    - You’ll need this key later to configure the sample application. This key value will not be displayed again, nor retrievable by any other means, so record it as soon as it is visible from the Azure portal.
-6.	In the list of pages for the app, select API permissions
-    - Click the Add a permission button
-    - Search for APIs in my organization for 3db474b9-6a0c-4840-96ac-1fceb342124f or Verifiable Credential and click the “Verifiable Credentials Service Request”
-    - Click the “Application Permission” and expand “VerifiableCredential.Create.All”
-    - Click Grant admin consent for {tenant name} on top of the API/Permission list and click YES. This allows the application to get the correct permissions
-![Admin concent](ReadmeFiles/AdminConcent.PNG)
+Before you can run this code sample application make sure your environment is setup correctly, follow the instructions provided in the first and second parts of this guide and/or in the documentation [here](https://aka.ms/vcsample).
 
 ## Setting up and running the code sample application
 To run the sample, clone the repository, compile & run it. It's callback endpoint must be publically reachable, and for that reason, use a tool like `ngrok` as a reverse proxy to reach your app.
@@ -128,13 +112,14 @@ The sample dynamically copies the hostname to be part of the callback URL, this 
 
 ## About the code
 Since the Request Service API is a multi-tenant API it needs to receive an access token when it's called. 
-The new endpoint of the API is https://verifiedid.did.msidentity.com/v1.0/{yourTenantID}/verifiablecredentials/request
+The endpoint of the API is https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/createIssuanceRequest and https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/createPresentationRequest.
 
-Please note that the prior beta.did.msidentity and the beta.eu.did.msidentity hostnames for this API continue to work:
+Please note that the prior beta.did.msidentity and the beta.eu.did.msidentity hostnames for this API continue to work. For example for the former:
   - https://beta.eu.did.msidentity.com/v1.0/{yourTenantID}/verifiablecredentials/request if your tenant is located in Europe.
   - https://beta.did.msidentity.com/v1.0/{yourTenantID}/verifiablecredentials/request otherwise.
 
-To get an access token we are using MSAL as library. MSAL supports the creation and caching of access token which are used when calling Azure Active Directory protected resources like the verifiable credential Request Service API.
+To get an access token we are using MSAL as library. MSAL supports the creation and caching of access token which are used when calling Azure Active Directory protected resources like the verifiable credential request API.
+
 Typical calling the library looks something like this:
 ```JavaScript
 var accessToken = "";
@@ -179,7 +164,7 @@ const msalClientCredentialRequest = {
 
 Calling the API looks like this:
 ```JavaScript
-var payload = JSON.stringify(presentationConfig);
+var payload = JSON.stringify(issuanceConfig);
 console.log( payload );
 const fetchOptions = {
   method: 'POST',
@@ -190,10 +175,23 @@ const fetchOptions = {
     'Authorization': `Bearer ${accessToken}`
   }
 };
-var client_api_request_endpoint = `https://beta.did.msidentity.com/v1.0/${mainApp.config.azTenantId}/verifiablecredentials/request`;
+var client_api_request_endpoint = `https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/createIssuanceRequest`;
 const response = await fetch(client_api_request_endpoint, fetchOptions);
 var resp = await response.json()
 ```
+
+## Deploying the code sample application to Azure AppServices
+If you deploy the sample to **Azure AppServices**, as an alternative to using [ngrok](https://docs.microsoft.com/en-us/azure/active-directory/verifiable-credentials/verifiable-credentials-faq#i-can-not-use-ngrok-what-do-i-do), you need to update the files `config.json`, `issuance_request_config.json` and `presentation_request_config.json` with your changes before you do **Deploy To Web App** in VSCode. After you have deployed your code sample application, AppServices starts it via invoking the `npm start` command, which means if those files contain the right settings, your app will start successfully. When you create an Azure AppService instance, you should select **Runtime stack** = `Node` and **OS** = `Linux` and select the same region that you have your Azure KeyVault deployed to.
+
+**package.json**
+```json
+  ...
+  "scripts": {
+    "start": "node app.js ./config.json ./issuance_request_config.json ./presentation_request_config.json",
+  ...
+```
+
+If the app doesn't start, if you view the logs in AppServices LogStream, you may see the problem. See [docs](https://docs.microsoft.com/en-us/azure/app-service/configure-language-python#customize-build-automation).
 
 ## Troubleshooting
 
