@@ -31,12 +31,7 @@ DeploymentMode="Development" UserJourneyRecorderEndpoint="urn:journeyrecorder:ap
           </ClaimsExchanges>
         </OrchestrationStep>
         <!-- If it's a new user, pass the claims to the VC sample to prepare for issuing a VC -->
-        <OrchestrationStep Order="7" Type="CombinedSignInAndSignUp" ContentDefinitionReferenceId="api.signuporsignin">
-          <ClaimsProviderSelections>
-            <ClaimsProviderSelection TargetClaimsExchangeId="PostVCIssuanceClaims" />
-          </ClaimsProviderSelections>
-        </OrchestrationStep>
-        <OrchestrationStep Order="8" Type="ClaimsExchange">
+        <OrchestrationStep Order="7" Type="ClaimsExchange"> <!-- change 7 to 9 for SocialAndLocalAccountsWithMfa -->
           <Preconditions>
             <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
               <Value>newUser</Value>
@@ -48,7 +43,7 @@ DeploymentMode="Development" UserJourneyRecorderEndpoint="urn:journeyrecorder:ap
           </ClaimsExchanges>
         </OrchestrationStep>
         <!-- If it's a new user, show the QR code to the user in order to issue the VC -->
-        <OrchestrationStep Order="9" Type="ClaimsExchange">
+        <OrchestrationStep Order="8" Type="ClaimsExchange"> <!-- change 8 to 10 for SocialAndLocalAccountsWithMfa -->
           <Preconditions>
             <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
               <Value>newUser</Value>
@@ -59,10 +54,12 @@ DeploymentMode="Development" UserJourneyRecorderEndpoint="urn:journeyrecorder:ap
             <ClaimsExchange Id="UXVCIssuanceClaims" TechnicalProfileReferenceId="SelfAsserted-VCIssuance" />
           </ClaimsExchanges>
         </OrchestrationStep>        
-        <OrchestrationStep Order="10" Type="SendClaims" CpimIssuerTechnicalProfileReferenceId="JwtIssuer" />
+        <!-- NOTE! If you are using the starter pack SocialAndLocalAccountsWithMfa, change 9 to 11 -->
+        <OrchestrationStep Order="9" Type="SendClaims" CpimIssuerTechnicalProfileReferenceId="JwtIssuer" />
       </OrchestrationSteps>
     </UserJourney>
   </UserJourneys>
+
   <RelyingParty>
     <DefaultUserJourney ReferenceId="SignUpOrSignIn" />
     <UserJourneyBehaviors>
@@ -79,13 +76,12 @@ DeploymentMode="Development" UserJourneyRecorderEndpoint="urn:journeyrecorder:ap
         <OutputClaim ClaimTypeReferenceId="surname" />
         <OutputClaim ClaimTypeReferenceId="email" />
         <OutputClaim ClaimTypeReferenceId="objectId" PartnerClaimType="sub" />
-        <OutputClaim ClaimTypeReferenceId="objectId" />
-        <OutputClaim ClaimTypeReferenceId="signInName" />
-        <!-- LocalAccount: whatever used to sign in with-->
-        <OutputClaim ClaimTypeReferenceId="signInNames.emailAddress" PartnerClaimType="email" />
-        <!-- LocalAccount: email -->
-        <OutputClaim ClaimTypeReferenceId="email" />
-        <!-- Other IDP: email -->
+        <OutputClaim ClaimTypeReferenceId="objectId" />        
+
+        <OutputClaim ClaimTypeReferenceId="signInName" /> <!-- LocalAccount: whatever used to sign in with-->
+        <OutputClaim ClaimTypeReferenceId="signInNames.emailAddress" PartnerClaimType="email" /> <!-- LocalAccount: email -->
+        <OutputClaim ClaimTypeReferenceId="email" /> <!-- Other IDP: email -->
+
         <OutputClaim ClaimTypeReferenceId="identityProvider" />
         <OutputClaim ClaimTypeReferenceId="VCCredentialType" />
         <OutputClaim ClaimTypeReferenceId="VCSubject" />
